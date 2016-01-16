@@ -39,7 +39,7 @@ class ProductController extends Controller
         $wishlist_added = Wishlist::has($product->id) ? ' added' : '';
         $tagNames = $product->tagNames();
         //Todo: config order và recently limit
-        $related_products = Product::queryDefault()->withAnyTag($tagNames)->orderByMatchedTag($tagNames)->orderUpdated()
+        $related_products = Product::queryDefault()->except()->withAnyTag($tagNames)->orderByMatchedTag($tagNames)->orderUpdated()
             ->take(6)->get();
         return view('product::frontend.product.show', compact('product', 'wishlist_added', 'related_products'));
     }

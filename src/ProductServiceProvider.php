@@ -25,10 +25,10 @@ class ProductServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/product.php'                 => config_path('product.php'),
                 __DIR__ . '/../database/migrations/' .
                 '2015_07_21_211026_create_manufacturers_table.php' =>
-                    database_path('migrations/' . '2015_07_21_211026_create_manufacturers_table.php'),
+                    database_path('migrations/2015_07_21_211026_create_manufacturers_table.php'),
                 __DIR__ . '/../database/migrations/' .
                 '2015_07_23_112625_create_products_table.php'      =>
-                    database_path('migrations/' . '2015_07_23_112625_create_products_table.php'),
+                    database_path('migrations/2015_07_23_112625_create_products_table.php'),
             ]
         );
 

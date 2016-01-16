@@ -32,7 +32,7 @@ class CreateProductsTable extends Migration
                 $table->string('featured_image', 255);
                 $table->integer('position')->unsigned()->default(0);
                 $table->boolean('is_special')->default(false);
-                $table->timestamps();
+                $table->nullableTimestamps();
             }
         );
     }
