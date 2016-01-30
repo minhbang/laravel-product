@@ -221,16 +221,19 @@ HTML;
         }
 
         return <<<"HTML"
-<tr id="row-{$index}">
+<tr id="row-{$index}" class="cart-item" data-id="{$product->id}">
     <td class="min-width text-right">{$index}</td>
-    <td class="min-width">{$this->featured_image('', true)}</td>
+    <td class="min-width image">{$this->featured_image('', true)}</td>
     <td class="min-width">{$product->code}</td>
-    <td class="name">
-        {$this->link()}
+    <td>
+        <a href="{$product->url}" class="name">{$product->name}</a>
         <div class="cart-button">{$this->htmlBtnCart()}</div>
     </td>
     <td class="min-width">{$this->manufacturer()}</td>
-    <td class="min-width price">{$this->price('đ')}</td>
+    <td class="min-width price">
+        {$this->price('đ', 'price-new')}<br>
+        {$this->price_old('đ', 'price-old')}
+    </td>
     <td class="min-width text-center">{$remove_link}</td>
 </tr>
 HTML;
