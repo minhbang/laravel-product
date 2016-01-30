@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelProduct\Presenters;
+namespace Minhbang\Product\Presenters;
 
 use Laracasts\Presenter\Presenter;
 

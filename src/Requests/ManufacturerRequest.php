@@ -1,12 +1,12 @@
 <?php
-namespace Minhbang\LaravelProduct\Requests;
+namespace Minhbang\Product\Requests;
 
-use Minhbang\LaravelKit\Extensions\Request;
+use Minhbang\Kit\Extensions\Request;
 
 /**
  * Class ManufacturerRequest
  *
- * @package Minhbang\LaravelProduct\Requests
+ * @package Minhbang\Product\Requests
  */
 class ManufacturerRequest extends Request
 {
@@ -35,7 +35,7 @@ class ManufacturerRequest extends Request
     public function rules()
     {
         $this->rules['logo'] .= '|max:' . setting('system.max_image_size') * 1024;
-        /** @var \Minhbang\LaravelProduct\Models\Manufacturer $manufacturer */
+        /** @var \Minhbang\Product\Models\Manufacturer $manufacturer */
         if ($manufacturer = $this->route('manufacturer')) {
             //update Manufacturer
         } else {

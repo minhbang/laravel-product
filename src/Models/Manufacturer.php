@@ -1,46 +1,46 @@
 <?php
-namespace Minhbang\LaravelProduct\Models;
+namespace Minhbang\Product\Models;
 
-use Minhbang\LaravelKit\Extensions\Model;
+use Minhbang\Kit\Extensions\Model;
 use Laracasts\Presenter\PresentableTrait;
-use Minhbang\LaravelKit\Traits\Model\PositionTrait;
-use Minhbang\LaravelKit\Traits\Model\SearchQuery;
+use Minhbang\Kit\Traits\Model\PositionTrait;
+use Minhbang\Kit\Traits\Model\SearchQuery;
 
 /**
  * Class Manufacturer
  *
- * @package Minhbang\LaravelProduct
+ * @package Minhbang\Product
  * @property integer $id
  * @property string $name
  * @property string $slug
  * @property string $logo
  * @property integer $position
- * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelProduct\Models\Product[] $products
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Product\Models\Product[] $products
  * @property-read mixed $url
  * @property-read mixed $resource_name
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer whereName($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer whereSlug($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer whereLogo($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer wherePosition($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer queryDefault()
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelKit\Extensions\Model except($id = null)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer searchWhere($column, $operator = '=', $fn = null)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer searchWhereIn($column, $fn)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer searchWhereBetween($column, $fn = null)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer searchWhereInDependent($column, $column_dependent, $fn, $empty = [])
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelProduct\Models\Manufacturer orderPosition($direction = 'asc')
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer whereSlug($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer whereLogo($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer wherePosition($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer queryDefault()
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Kit\Extensions\Model except($id = null)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer searchWhere($column, $operator = '=', $fn = null)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer searchWhereIn($column, $fn)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer searchWhereBetween($column, $fn = null)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer searchWhereInDependent($column, $column_dependent, $fn, $empty = [])
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Manufacturer orderPosition($direction = 'asc')
  */
 class Manufacturer extends Model
 {
-    const LOGO_SIZE = 128;
+    const LOGO_SIZE       = 128;
     const LOGO_SMALL_SIZE = 48;
-    const LOGO_SMALL = 'sm';
+    const LOGO_SMALL      = 'sm';
     use PresentableTrait;
     use SearchQuery;
     use PositionTrait;
 
-    protected $presenter = 'Minhbang\LaravelProduct\Presenters\ManufacturerPresenter';
+    protected $presenter = 'Minhbang\Product\Presenters\ManufacturerPresenter';
     protected $table = 'manufacturers';
     protected $fillable = ['name', 'slug'];
     public $timestamps = false;
@@ -58,7 +58,7 @@ class Manufacturer extends Model
      */
     public function products()
     {
-        return $this->hasMany('Minhbang\LaravelProduct\Models\Product');
+        return $this->hasMany('Minhbang\Product\Models\Product');
     }
 
     /**
@@ -89,7 +89,7 @@ class Manufacturer extends Model
      */
     public static function getList($attribute = 'name', $key = 'id')
     {
-        return static::orderPosition()->lists($attribute, $key)->all();
+        return static::orderPosition()->pluck($attribute, $key)->all();
     }
 
     /**
@@ -111,6 +111,7 @@ class Manufacturer extends Model
     public function getLogoPath($small = false, $logo = null)
     {
         $logo = ($small ? static::LOGO_SMALL . '-' : '') . ($logo ?: $this->logo);
+
         return $this->getLogoDirectory() . "/$logo";
     }
 
@@ -135,7 +136,7 @@ class Manufacturer extends Model
      * - move đúng thư mục
      * - nếu edit thì xóa file cũ
      *
-     * @param \Minhbang\LaravelProduct\Requests\ManufacturerRequest|\App\Http\Requests\Request $request
+     * @param \Minhbang\Product\Requests\ManufacturerRequest|\App\Http\Requests\Request $request
      */
     public function fillLogo($request)
     {
@@ -165,7 +166,7 @@ class Manufacturer extends Model
         // trước khi xóa Manufacturer, sẽ xóa logo của nó
         static::deleting(
             function ($model) {
-                /** @var \Minhbang\LaravelProduct\Models\Manufacturer $model */
+                /** @var \Minhbang\Product\Models\Manufacturer $model */
                 if ($model->logo) {
                     @unlink($model->getLogoPath());
                     @unlink($model->getLogoPath(true));

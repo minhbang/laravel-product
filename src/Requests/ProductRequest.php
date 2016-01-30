@@ -1,12 +1,12 @@
 <?php
-namespace Minhbang\LaravelProduct\Requests;
+namespace Minhbang\Product\Requests;
 
-use Minhbang\LaravelKit\Extensions\Request;
+use Minhbang\Kit\Extensions\Request;
 
 
 class ProductRequest extends Request
 {
-    public $trans_prefix = 'product';
+    public $trans_prefix = 'product::common';
     public $rules = [
         'name'            => 'required|max:255',
         'slug'            => 'required|max:255|alpha_dash|unique:products',
@@ -15,7 +15,7 @@ class ProductRequest extends Request
         'price_old'       => 'integer',
         'code'            => 'required|max:100|alpha_dash|unique:products',
         'size'            => 'max:255',
-        'gender'          => 'integer',
+        'gender_id'       => 'integer',
         'category_id'     => 'required|integer|exists:categories,id',
         'age_id'          => 'integer|exists:categories,id',
         'manufacturer_id' => 'required|integer|exists:manufacturers,id',
@@ -38,7 +38,7 @@ class ProductRequest extends Request
      */
     public function rules()
     {
-        /** @var \Minhbang\LaravelProduct\Models\Product $product */
+        /** @var \Minhbang\Product\Models\Product $product */
         if ($product = $this->route('product')) {
             //update Product
             $this->rules['slug'] .= ',slug,' . $product->id;
@@ -47,6 +47,7 @@ class ProductRequest extends Request
             // create Product
             //$this->rules['images'] .= ':not_empty';
         }
+
         return $this->rules;
     }
 

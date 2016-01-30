@@ -26,20 +26,12 @@ return [
     'category'       => [
         // Danh mục sản phẩm
         'product' => 'product',
-        // Danh mục độ tuổi
-        'age'     => 'age',
     ],
     /**
      * Khai báo middlewares cho các Controller
      */
     'middlewares'    => [
-        'frontend' => [
-            'product'      => null,
-            'manufacturer' => null,
-        ],
-        'backend'  => [
-            'product'      => 'admin',
-            'manufacturer' => 'admin',
-        ],
+        'frontend' => null,
+        'backend'  => 'role:admin',
     ],
 ];

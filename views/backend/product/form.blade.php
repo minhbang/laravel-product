@@ -132,7 +132,7 @@
                         <div class="col-sm-6">
                             <div class="form-group{{ $errors->has('is_special') ? ' has-error':'' }}">
                                 {!! Form::label('is_special', trans('product::common.is_special'), ['class' => 'control-label switch-label']) !!}
-                                {!! Form::checkbox('is_special', 1, null,['data-on-text'=>trans('common.yes'), 'data-off-text'=>trans('common.no')]) !!}
+                                {!! Form::checkbox('is_special', 1, null,['class' => 'switch', 'data-on-text'=>trans('common.yes'), 'data-off-text'=>trans('common.no')]) !!}
                                 @if($errors->has('is_special'))
                                     <p class="help-block">{{ $errors->first('is_special') }}</p>
                                 @endif
@@ -150,11 +150,11 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group{{ $errors->has("gender") ? ' has-error':'' }}">
-                                {!! Form::label("gender", trans('product::common.genders'), ['class' => "control-label"]) !!}
-                                {!! Form::select("gender", $genders, null, ['class' => 'form-control selectize']) !!}
-                                @if($errors->has("gender"))
-                                    <p class="help-block">{{ $errors->first("gender") }}</p>
+                            <div class="form-group{{ $errors->has("gender_id") ? ' has-error':'' }}">
+                                {!! Form::label("gender_id", trans('product::common.gender_id'), ['class' => "control-label"]) !!}
+                                {!! Form::select("gender_id", $genders, null, ['class' => 'form-control selectize']) !!}
+                                @if($errors->has("gender_id"))
+                                    <p class="help-block">{{ $errors->first("gender_id") }}</p>
                                 @endif
                             </div>
                         </div>

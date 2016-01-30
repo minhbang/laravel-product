@@ -1,33 +1,33 @@
 <?php
-namespace Minhbang\LaravelProduct\Controllers\Backend;
+namespace Minhbang\Product\Controllers\Backend;
 
-use Minhbang\LaravelImage\ImageModel;
-use Minhbang\LaravelKit\Traits\Controller\PositionActions;
-use Minhbang\LaravelProduct\Models\Manufacturer;
-use Minhbang\LaravelProduct\Models\Product;
+use Minhbang\Image\ImageModel;
+use Minhbang\Kit\Traits\Controller\PositionActions;
+use Minhbang\Product\Models\Manufacturer;
+use Minhbang\Product\Models\Product;
 use Datatable;
 use Html;
-use Minhbang\LaravelProduct\Requests\ProductRequest;
-use Minhbang\LaravelKit\Extensions\BackendController;
+use Minhbang\Product\Requests\ProductRequest;
+use Minhbang\Kit\Extensions\BackendController;
 use Request;
 use Session;
 
 /**
  * Class ProductController
  *
- * @package App\Http\Controllers\Backend
+ * @package Minhbang\Product\Controllers\Backend
  */
 class ProductController extends BackendController
 {
     use PositionActions;
 
-    /** @var  \Minhbang\LaravelCategory\Category */
+    /** @var  \Minhbang\Category\Manager */
     protected $categoryManager;
 
     public function __construct()
     {
-        parent::__construct(config('product.middlewares.backend.product'));
-        $this->categoryManager = app('category')->manage('product-backend');
+        parent::__construct();
+        $this->categoryManager = app('category')->manage('product');
     }
 
     /**
@@ -37,7 +37,7 @@ class ProductController extends BackendController
      */
     public function data()
     {
-        /** @var \Minhbang\LaravelProduct\Models\Product $query */
+        /** @var \Minhbang\Product\Models\Product $query */
         $query = Product::queryDefault()->orderPosition()->withCategoryTitle();
         if (Request::has('search_form')) {
             $query->searchWhere('products.category_id')
@@ -45,6 +45,7 @@ class ProductController extends BackendController
                 ->searchWhereBetween('products.created_at', 'mb_date_vn2mysql')
                 ->searchWhereBetween('products.updated_at', 'mb_date_vn2mysql');
         }
+
         return Datatable::query($query)
             ->addColumn(
                 'index',
@@ -71,23 +72,26 @@ class ProductController extends BackendController
                 }
             )
             ->addColumn(
-                'price_old',
-                function (Product $model) {
-                    return $model->present()->price_old;
-                }
-            )
-            ->addColumn(
                 'category',
                 function (Product $model) {
                     return $model->category_title;
                 }
             )
             ->addColumn(
+                'is_special',
+                function (Product $model) {
+                    return Html::yesNo($model->is_special, '', false, null, null, [
+                        'data-toggle' => 'tooltip',
+                        'data-title'  => $model->is_special ? trans('product::common.special_product') : trans('product::common.normal_product'),
+                    ]);
+                }
+            )
+            ->addColumn(
                 'actions',
                 function (Product $model) {
                     return Html::tableActions(
-                        'backend/product',
-                        $model->id,
+                        'backend.product',
+                        ['product' => $model->id],
                         $model->name,
                         trans('product::common.product'),
                         [
@@ -97,7 +101,7 @@ class ProductController extends BackendController
                     );
                 }
             )
-            ->searchColumns('products.title', 'categories.title')
+            ->searchColumns('products.name', 'categories.title')
             ->make();
     }
 
@@ -117,8 +121,8 @@ class ProductController extends BackendController
         ];
         $options = [
             'aoColumnDefs' => [
-                ['sClass' => 'min-width', 'aTargets' => [1, -1, -2]],
-                ['sClass' => 'min-width column-number', 'aTargets' => [0, -3, -4]],
+                ['sClass' => 'min-width', 'aTargets' => [1, -1, -2, -3]],
+                ['sClass' => 'min-width column-number', 'aTargets' => [0, 3]],
             ],
         ];
         $table = Datatable::table()
@@ -127,20 +131,20 @@ class ProductController extends BackendController
                 trans('product::common.code_th'),
                 trans('product::common.name'),
                 trans('product::common.price'),
-                trans('product::common.price_old'),
                 trans('product::common.category_id'),
+                '<i class="fa fa-check"></i>',
                 trans('common.actions')
             )
             ->setOptions($options)
             ->setCustomValues($tableOptions);
 
-        $categories = $this->categoryManager->of('product')->selectize();
-        $ages = $this->categoryManager->of('age')->selectize();;
-        $genders = (new Product())->itemAlias('Gender');
+        $categories = $this->categoryManager->selectize();
         $this->buildHeading(trans('product::common.manage'), 'fa-cubes', ['#' => trans('product::common.product')]);
+        $enums = (new Product())->loadEnums();
+
         return view(
             'product::backend.product.index',
-            compact('tableOptions', 'options', 'table', 'categories', 'genders', 'ages')
+            compact('tableOptions', 'options', 'table', 'categories') + $enums
         );
     }
 
@@ -155,9 +159,7 @@ class ProductController extends BackendController
 
         $url = route('backend.product.store');
         $method = 'post';
-        $categories = $this->categoryManager->of('product')->selectize();
-        $ages = $this->categoryManager->of('age')->selectize();
-        $genders = $product->itemAlias('Gender');
+        $categories = $this->categoryManager->selectize();
         $manufacturers = Manufacturer::getList();
         $tags = '';
         $all_product_tags = Product::allTagNames();
@@ -171,14 +173,16 @@ class ProductController extends BackendController
                 '#'                            => trans('common.create'),
             ]
         );
+
         return view(
             'product::backend.product.form',
-            compact('product', 'url', 'method', 'categories', 'genders', 'ages', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images')
+            compact('product', 'url', 'method', 'categories', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images') +
+            $product->loadEnums('id')
         );
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Requests\ProductRequest $request
+     * @param \Minhbang\Product\Requests\ProductRequest $request
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -198,11 +202,12 @@ class ProductController extends BackendController
                 'content' => trans('common.create_object_success', ['name' => trans('product::common.product')]),
             ]
         );
+
         return redirect(route('backend.product.index'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Product $product
+     * @param \Minhbang\Product\Models\Product $product
      *
      * @return \Illuminate\View\View
      */
@@ -220,11 +225,12 @@ class ProductController extends BackendController
                 ],
             ]
         );
+
         return view('product::backend.product.show', compact('product'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Product $product
+     * @param \Minhbang\Product\Models\Product $product
      *
      * @return \Illuminate\View\View
      * @throws \Laracasts\Presenter\Exceptions\PresenterException
@@ -233,9 +239,7 @@ class ProductController extends BackendController
     {
         $url = route('backend.product.update', ['product' => $product->id]);
         $method = 'put';
-        $categories = $this->categoryManager->of('product')->selectize();
-        $ages = $this->categoryManager->of('age')->selectize();
-        $genders = $product->itemAlias('Gender');
+        $categories = $this->categoryManager->selectize();
         $manufacturers = Manufacturer::getList();
         $tags = implode(',', $product->tagNames());
         $all_product_tags = Product::allTagNames();
@@ -249,15 +253,17 @@ class ProductController extends BackendController
                 '#'                            => trans('common.edit'),
             ]
         );
+
         return view(
             'product::backend.product.form',
-            compact('product', 'url', 'method', 'categories', 'genders', 'ages', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images')
+            compact('product', 'url', 'method', 'categories', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images') +
+            $product->loadEnums('id')
         );
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Requests\ProductRequest $request
-     * @param \Minhbang\LaravelProduct\Models\Product $product
+     * @param \Minhbang\Product\Requests\ProductRequest $request
+     * @param \Minhbang\Product\Models\Product $product
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -274,17 +280,19 @@ class ProductController extends BackendController
                 'content' => trans('common.update_object_success', ['name' => trans('product::common.product')]),
             ]
         );
+
         return redirect(route('backend.product.index'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Product $product
+     * @param \Minhbang\Product\Models\Product $product
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function destroy(Product $product)
     {
         $product->delete();
+
         return response()->json(
             [
                 'type'    => 'success',

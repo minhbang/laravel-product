@@ -54,7 +54,7 @@
         <td><strong>{!! $product->present()->is_special !!}</strong></td>
     </tr>
     <tr>
-        <td>{{ trans('product::common.genders') }}</td>
+        <td>{{ trans('product::common.gender_id') }}</td>
         <td><strong>{{ $product->present()->gender }}</strong></td>
     </tr>
     <tr>

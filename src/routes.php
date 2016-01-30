@@ -1,10 +1,10 @@
 <?php
 /**
- * LaravelProduct routes
+ * Product routes
  */
 // Product
 Route::group(
-    ['prefix' => 'product', 'namespace' => 'Minhbang\LaravelProduct\Controllers\Frontend'],
+    ['prefix' => 'product', 'namespace' => 'Minhbang\Product\Controllers\Frontend', 'middleware' => config('product.middlewares.frontend')],
     function () {
         Route::get('/', ['as' => 'product.index', 'uses' => 'ProductController@index']);
         Route::get('{product}/{slug}', ['as' => 'product.show', 'uses' => 'ProductController@show']);
@@ -13,7 +13,7 @@ Route::group(
 
 
 Route::group(
-    ['prefix' => 'backend', 'namespace' => 'Minhbang\LaravelProduct\Controllers\Backend'],
+    ['prefix' => 'backend', 'namespace' => 'Minhbang\Product\Controllers\Backend', 'middleware' => config('product.middlewares.backend')],
     function () {
         // Manufacturer
         Route::group(['prefix' => 'manufacturer', 'as' => 'backend.manufacturer.'], function () {

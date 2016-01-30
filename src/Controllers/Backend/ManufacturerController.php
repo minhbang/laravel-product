@@ -1,12 +1,12 @@
 <?php
-namespace Minhbang\LaravelProduct\Controllers\Backend;
+namespace Minhbang\Product\Controllers\Backend;
 
-use Minhbang\LaravelKit\Extensions\BackendController;
-use Minhbang\LaravelProduct\Models\Manufacturer;
+use Minhbang\Kit\Extensions\BackendController;
+use Minhbang\Product\Models\Manufacturer;
 use Datatable;
 use Html;
-use Minhbang\LaravelProduct\Requests\ManufacturerRequest;
-use Minhbang\LaravelKit\Traits\Controller\PositionActions;
+use Minhbang\Product\Requests\ManufacturerRequest;
+use Minhbang\Kit\Traits\Controller\PositionActions;
 
 /**
  * Class ManufacturerController
@@ -17,11 +17,6 @@ class ManufacturerController extends BackendController
 {
     use PositionActions;
 
-    public function __construct()
-    {
-        parent::__construct(config('product.middlewares.backend.manufacturer'));
-    }
-
     /**
      * Danh sách Manufacturer theo định dạng của Datatables.
      *
@@ -31,6 +26,7 @@ class ManufacturerController extends BackendController
     {
         /** @var Manufacturer $query */
         $query = Manufacturer::orderPosition();
+
         return Datatable::query($query)
             ->addColumn(
                 'index',
@@ -54,8 +50,8 @@ class ManufacturerController extends BackendController
                 'actions',
                 function (Manufacturer $model) {
                     return Html::tableActions(
-                        'backend/manufacturer',
-                        $model->id,
+                        'backend.manufacturer',
+                        ['manufacturer' => $model->id],
                         $model->name,
                         trans('product::manufacturer.manufacturer'),
                         [
@@ -99,6 +95,7 @@ class ManufacturerController extends BackendController
             ->setOptions($options)
             ->setCustomValues($tableOptions);
         $this->buildHeading(trans('product::manufacturer.manage'), 'fa-diamond', ['#' => trans('product::manufacturer.manufacturer')]);
+
         return view('product::backend.manufacturer.index', compact('tableOptions', 'options', 'table'));
     }
 
@@ -112,11 +109,12 @@ class ManufacturerController extends BackendController
         $url = route('backend.manufacturer.store');
         $method = 'post';
         $logo_size = Manufacturer::LOGO_SIZE;
+
         return view('product::backend.manufacturer.form', compact('manufacturer', 'url', 'method', 'logo_size'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Requests\ManufacturerRequest $request
+     * @param \Minhbang\Product\Requests\ManufacturerRequest $request
      *
      * @return \Illuminate\View\View
      */
@@ -127,6 +125,7 @@ class ManufacturerController extends BackendController
         $manufacturer->fillLogo($request);
         $manufacturer->fillNextPosition();
         $manufacturer->save();
+
         return view(
             '_modal_script',
             [
@@ -141,7 +140,7 @@ class ManufacturerController extends BackendController
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Manufacturer $manufacturer
+     * @param \Minhbang\Product\Models\Manufacturer $manufacturer
      *
      * @return \Illuminate\View\View
      */
@@ -151,7 +150,7 @@ class ManufacturerController extends BackendController
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Manufacturer $manufacturer
+     * @param \Minhbang\Product\Models\Manufacturer $manufacturer
      *
      * @return \Illuminate\View\View
      */
@@ -160,12 +159,13 @@ class ManufacturerController extends BackendController
         $url = route('backend.manufacturer.update', ['manufacturer' => $manufacturer->id]);
         $method = 'put';
         $logo_size = Manufacturer::LOGO_SIZE;
+
         return view('product::backend.manufacturer.form', compact('manufacturer', 'url', 'method', 'logo_size'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Requests\ManufacturerRequest $request
-     * @param \Minhbang\LaravelProduct\Models\Manufacturer $manufacturer
+     * @param \Minhbang\Product\Requests\ManufacturerRequest $request
+     * @param \Minhbang\Product\Models\Manufacturer $manufacturer
      *
      * @return \Illuminate\View\View
      */
@@ -174,6 +174,7 @@ class ManufacturerController extends BackendController
         $manufacturer->fill($request->all());
         $manufacturer->fillLogo($request);
         $manufacturer->save();
+
         return view(
             '_modal_script',
             [
@@ -187,7 +188,7 @@ class ManufacturerController extends BackendController
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Manufacturer $manufacturer
+     * @param \Minhbang\Product\Models\Manufacturer $manufacturer
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
@@ -195,6 +196,7 @@ class ManufacturerController extends BackendController
     public function destroy(Manufacturer $manufacturer)
     {
         $manufacturer->delete();
+
         return response()->json(
             [
                 'type'    => 'success',

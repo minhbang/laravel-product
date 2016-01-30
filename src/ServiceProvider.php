@@ -1,11 +1,11 @@
 <?php
 
-namespace Minhbang\LaravelProduct;
+namespace Minhbang\Product;
 
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class ProductServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -20,16 +20,19 @@ class ProductServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../views', 'product');
         $this->publishes(
             [
-                __DIR__ . '/../views'                              => base_path('resources/views/vendor/product'),
-                __DIR__ . '/../lang'                               => base_path('resources/lang/vendor/product'),
-                __DIR__ . '/../config/product.php'                 => config_path('product.php'),
-                __DIR__ . '/../database/migrations/' .
-                '2015_07_21_211026_create_manufacturers_table.php' =>
-                    database_path('migrations/2015_07_21_211026_create_manufacturers_table.php'),
-                __DIR__ . '/../database/migrations/' .
-                '2015_07_23_112625_create_products_table.php'      =>
-                    database_path('migrations/2015_07_23_112625_create_products_table.php'),
+                __DIR__ . '/../views'              => base_path('resources/views/vendor/product'),
+                __DIR__ . '/../lang'               => base_path('resources/lang/vendor/product'),
+                __DIR__ . '/../config/product.php' => config_path('product.php'),
             ]
+        );
+        $this->publishes(
+            [
+                __DIR__ . '/../database/migrations/2015_07_21_211026_create_manufacturers_table.php' =>
+                    database_path('migrations/2015_07_21_211026_create_manufacturers_table.php'),
+                __DIR__ . '/../database/migrations/2015_07_23_112625_create_products_table.php'      =>
+                    database_path('migrations/2015_07_23_112625_create_products_table.php'),
+            ],
+            'db'
         );
 
         if (config('product.add_route') && !$this->app->routesAreCached()) {
@@ -39,8 +42,8 @@ class ProductServiceProvider extends ServiceProvider
         $router->pattern('product', '[0-9]+');
         $router->pattern('manufacturer', '[0-9]+');
         // model bindings
-        $router->model('product', 'Minhbang\LaravelProduct\Models\Product');
-        $router->model('manufacturer', 'Minhbang\LaravelProduct\Models\Manufacturer');
+        $router->model('product', 'Minhbang\Product\Models\Product');
+        $router->model('manufacturer', 'Minhbang\Product\Models\Manufacturer');
     }
 
     /**

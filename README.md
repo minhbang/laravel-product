@@ -20,7 +20,7 @@ $ composer update
 
 * **Thêm vào file config/app.php => 'providers'**
 ```php
-	Minhbang\LaravelProduct\ProductServiceProvider::class,
+	Minhbang\Product\ProductServiceProvider::class,
 ```
 
 * **Publish config và database migrations**

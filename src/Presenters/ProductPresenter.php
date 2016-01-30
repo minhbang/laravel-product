@@ -1,15 +1,17 @@
 <?php
-namespace Minhbang\LaravelProduct\Presenters;
+namespace Minhbang\Product\Presenters;
 
 use Html;
 use Wishlist;
-use Laracasts\Presenter\Presenter;
-use Minhbang\LaravelKit\Traits\Presenter\DatetimePresenter;
+use Minhbang\Enum\EnumPresenter as Presenter;
+use Minhbang\Kit\Traits\Presenter\DatetimePresenter;
 
 /**
  * Class ProductPresenter
  *
- * @package Minhbang\LaravelProduct
+ * @property-read string $gender
+ * @property-read string $age
+ * @package Minhbang\Product\Presenters
  */
 class ProductPresenter extends Presenter
 {
@@ -35,6 +37,7 @@ class ProductPresenter extends Presenter
     {
         if ($tags = $this->entity->tagNames()) {
             $result = implode('</span><span class="label label-primary">', $tags);
+
             return "<span class=\"label label-primary\">$result</span>";
         } else {
             return '';
@@ -51,7 +54,8 @@ class ProductPresenter extends Presenter
     <li><span>" . trans('product::common.code') . ":</span> {$this->entity->code}</li>
     <li><span>" . trans('product::common.manufacturer_id') . ":</span> {$this->manufacturer()}</li>
     <li><span>" . trans('product::common.category_id') . ":</span> {$this->category()}</li>
-    <li><span>" . trans('product::common.age_id') . ":</span> {$this->age()}</li>
+    <li><span>" . trans('product::common.gender_id') . ":</span> {$this->gender}</li>
+    <li><span>" . trans('product::common.age_id') . ":</span> {$this->age}</li>
     <li><span>" . trans('product::common.size') . ":</span> {$this->entity->size}</li>
 </ul>";
     }
@@ -79,27 +83,11 @@ class ProductPresenter extends Presenter
     }
 
     /**
-     * @return string
-     */
-    public function gender()
-    {
-        return $this->entity->itemAlias('Gender', $this->entity->gender);
-    }
-
-    /**
      * @return string|null
      */
     public function category()
     {
         return $this->entity->category ? $this->entity->category->title : null;
-    }
-
-    /**
-     * @return string
-     */
-    public function age()
-    {
-        return $this->entity->age ? $this->entity->age->title : trans('common.all');
     }
 
     /**
@@ -126,6 +114,7 @@ class ProductPresenter extends Presenter
     public function linkPreview()
     {
         $url = route('backend.product.show', ['product' => $this->entity->id]);
+
         return "<a href=\"{$url}\">{$this->entity->name}</a>";
     }
 
@@ -144,6 +133,7 @@ class ProductPresenter extends Presenter
         $sm = $sm ? '_sm' : '';
         $width = $this->entity->config['featured_image']["width{$sm}"];
         $height = $this->entity->config['featured_image']["height{$sm}"];
+
         return "<img{$class} src=\"$src\" title=\"{$this->entity->name}\" ath=\"{$this->entity->name}\" width=\"$width\" height=\"$height\" />{$html}";
     }
 
@@ -155,6 +145,7 @@ class ProductPresenter extends Presenter
         foreach ($images as $image) {
             $html .= "<a href=\"{$image->src}\" data-lightbox=\"product{$id}\" data-title=\"{$image->title}\"><img src=\"{$image->thumb}\"/></a>";
         }
+
         return "<div class=\"lightbox-images\">$html</div>";
     }
 
@@ -172,6 +163,7 @@ class ProductPresenter extends Presenter
         if ($html) {
             $html = "<ul class=\"slider-images bxslider\" style=\"display:none\">{$html}</ul>";
         }
+
         return $html;
     }
 
@@ -187,6 +179,7 @@ class ProductPresenter extends Presenter
         $wishlist_added = Wishlist::has($this->entity->id) ? ' added' : '';
         $compare_label = trans('shop::cart.compare');
         $compare_url = route('wishlist.compare', ['product' => $this->entity->id]);
+
         return <<<"HTML"
 <div class="product-col cart-item" data-id="{$this->entity->id}">
     <div class="image"><a href="{$this->entity->url}">{$this->featured_image()}</a></div>
@@ -217,7 +210,7 @@ HTML;
      */
     public function htmlWishlistRow($index = null)
     {
-        /** @var \Minhbang\LaravelProduct\Models\Product $product */
+        /** @var \Minhbang\Product\Models\Product $product */
         $product = $this->entity;
         if ($index) {
             $remove_url = route('wishlist.update', ['product' => $product->id]);
@@ -226,6 +219,7 @@ HTML;
         } else {
             $remove_link = '';
         }
+
         return <<<"HTML"
 <tr id="row-{$index}">
     <td class="min-width text-right">{$index}</td>
@@ -249,6 +243,7 @@ HTML;
     {
         $cart_label = trans('shop::cart.add');
         $cart_url = route('cart.add', ['product' => $this->entity->id]);
+
         return "<a href=\"{$cart_url}\" class=\"btn btn-cart\" data-action=\"cart-add\">
                 {$cart_label} <i class=\"fa fa-shopping-cart\"></i>
             </a>";

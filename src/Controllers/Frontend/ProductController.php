@@ -1,26 +1,47 @@
 <?php
-namespace Minhbang\LaravelProduct\Controllers\Frontend;
+namespace Minhbang\Product\Controllers\Frontend;
 
+use Minhbang\Option\OptionableController;
 use Wishlist;
-use Minhbang\LaravelProduct\Models\Product;
-use Minhbang\LaravelKit\Extensions\Controller;
+use Minhbang\Product\Models\Product;
+use Minhbang\Kit\Extensions\Controller;
+use Minhbang\Shop\DisplayOption;
 
+/**
+ * Class ProductController
+ *
+ * @package Minhbang\Product\Controllers\Frontend
+ */
 class ProductController extends Controller
 {
+    use OptionableController;
+
+    /**
+     * @return array
+     */
+    protected function optionConfig()
+    {
+        return [
+            'zone'  => 'shop',
+            'group' => 'product',
+            'class' => DisplayOption::class,
+        ];
+    }
+
     /**
      * @return \Illuminate\View\View
      * @throws \Laracasts\Presenter\Exceptions\PresenterException
      */
     public function index()
     {
-        // Todo: options products per page
         $products = Product::orderPosition()->paginate(12);
         $this->buildBreadcrumbs(['#' => trans('product::common.product')]);
+
         return view('product::frontend.product.index', compact('products'));
     }
 
     /**
-     * @param \Minhbang\LaravelProduct\Models\Product $product
+     * @param \Minhbang\Product\Models\Product $product
      * @param string $slug
      *
      * @return \Illuminate\View\View
@@ -41,6 +62,7 @@ class ProductController extends Controller
         //Todo: config order và recently limit
         $related_products = Product::queryDefault()->except()->withAnyTag($tagNames)->orderByMatchedTag($tagNames)->orderUpdated()
             ->take(6)->get();
+
         return view('product::frontend.product.show', compact('product', 'wishlist_added', 'related_products'));
     }
 }
