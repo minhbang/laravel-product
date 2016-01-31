@@ -134,6 +134,7 @@ class Product extends Model implements EnumContract
         $this->config([
             'featured_image' => config('product.featured_image'),
         ]);
+        $this->enumNotRestore = true;
     }
 
     /**
