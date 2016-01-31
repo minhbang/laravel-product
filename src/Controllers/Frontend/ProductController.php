@@ -34,7 +34,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderPosition()->paginate(12);
+        $query = Product::queryDefault();
+        $products = $this->optionAppliedPaginate($query, true);
         $this->buildBreadcrumbs(['#' => trans('product::common.product')]);
 
         return view('product::frontend.product.index', compact('products'));
@@ -60,8 +61,8 @@ class ProductController extends Controller
         $wishlist_added = Wishlist::has($product->id) ? ' added' : '';
         $tagNames = $product->tagNames();
         //Todo: config order và recently limit
-        $related_products = Product::queryDefault()->except()->withAnyTag($tagNames)->orderByMatchedTag($tagNames)->orderUpdated()
-            ->take(6)->get();
+        $related_products = Product::queryDefault()->except()->withAnyTag($tagNames)->orderByMatchedTag($tagNames)
+            ->orderUpdated()->take(6)->get();
 
         return view('product::frontend.product.show', compact('product', 'wishlist_added', 'related_products'));
     }
