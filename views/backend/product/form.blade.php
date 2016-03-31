@@ -1,6 +1,15 @@
 @extends('backend.layouts.main')
 @section('content')
     {!! Form::model($product, ['id' => 'product-form', 'files' => true, 'url' => $url, 'method' => $method]) !!}
+    <ul class="nav nav-tabs nav-tabs-no-boder">
+        @foreach($locales as $locale => $locale_title)
+            <li role="presentation" class="{{$locale == $active_locale ? 'active': ''}}">
+                <a href="#{{$locale}}-attributes" role="tab" data-toggle="tab">
+                    <span class="text-{{LocaleManager::css($locale)}}">{{$locale_title}}</span>
+                </a>
+            </li>
+        @endforeach
+    </ul>
     <div class="row">
         <div class="col-lg-6 col-md-12">
             <div class="ibox">
@@ -11,33 +20,40 @@
                     </div>
                 </div>
                 <div class="ibox-content">
-                    <div class="form-group{{ $errors->has("name") ? ' has-error':'' }}">
-                        {!! Form::label("name", trans('product::common.name'), ['class' => "control-label"]) !!}
-                        {!! Form::text("name", null, ['class' => 'has-slug form-control','data-slug_target' => "#name-slug"]) !!}
-                        @if($errors->has("name"))
-                            <p class="help-block">{{ $errors->first("name") }}</p>
-                        @endif
-                    </div>
-                    <div class="form-group{{ $errors->has("slug") ? ' has-error':'' }}">
-                        {!! Form::label("slug", trans('product::common.slug'), ['class' => "control-label"]) !!}
-                        {!! Form::text("slug", null, ['id'=>"name-slug", 'class' => 'form-control']) !!}
-                        @if($errors->has("slug"))
-                            <p class="help-block">{{ $errors->first("slug") }}</p>
-                        @endif
-                    </div>
-                    <div class="form-group{{ $errors->has("description") ? ' has-error':'' }}">
-                        {!! Form::label("description", trans('product::common.description'), ['class' => "control-label"]) !!}
-                        {!! Form::textarea("description", null, [
-                            'class' => 'form-control wysiwyg',
-                            'data-editor' => 'basic_no_image',
-                            'data-height' => 350,
-                            'data-attribute' => 'description',
-                            'data-resource' => 'product',
-                            'data-id' => $product->id
-                        ]) !!}
-                        @if($errors->has("description"))
-                            <p class="help-block">{{ $errors->first("description") }}</p>
-                        @endif
+                    <div class="tab-content">
+                        @foreach($locales as $locale => $locale_title)
+                            <div role="tabpanel" class="tab-pane{{$locale == $active_locale ? ' active': ''}}"
+                                 id="{{$locale}}-attributes">
+                                <div class="form-group{{ $errors->has("name") ? ' has-error':'' }}">
+                                    {!! Form::label("name", trans('product::common.name'), ['class' =>" control-label text-". LocaleManager::css($locale)]) !!}
+                                    {!! Form::text("{$locale}[name]", $product->{"name:$locale| "}, ['class' => 'has-slug form-control','data-slug_target' => "#{$locale}-name-slug"]) !!}
+                                    @if($errors->has("name"))
+                                        <p class="help-block">{{ $errors->first("name") }}</p>
+                                    @endif
+                                </div>
+                                <div class="form-group{{ $errors->has("slug") ? ' has-error':'' }}">
+                                    {!! Form::label("slug", trans('product::common.slug'), ['class' => "control-label text-". LocaleManager::css($locale)]) !!}
+                                    {!! Form::text("{$locale}[slug]", $product->{"slug:$locale| "}, ['id'=>"{$locale}-name-slug", 'class' => 'form-control']) !!}
+                                    @if($errors->has("slug"))
+                                        <p class="help-block">{{ $errors->first("slug") }}</p>
+                                    @endif
+                                </div>
+                                <div class="form-group{{ $errors->has("description") ? ' has-error':'' }}">
+                                    {!! Form::label("description", trans('product::common.description'), ['class' => "control-label text-". LocaleManager::css($locale)]) !!}
+                                    {!! Form::textarea("{$locale}[description]", $product->{"description:$locale| "}, [
+                                        'class' => 'form-control wysiwyg',
+                                        'data-editor' => 'basic_no_image',
+                                        'data-height' => 350,
+                                        'data-attribute' => 'description',
+                                        'data-resource' => 'product',
+                                        'data-id' => $product->id
+                                    ]) !!}
+                                    @if($errors->has("description"))
+                                        <p class="help-block">{{ $errors->first("description") }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -186,7 +202,8 @@
     <div class="ibox">
         <div class="ibox-content">
             <div class="form-group text-center">
-                <button type="submit" class="btn btn-success" style="margin-right: 15px;">{{ trans('common.save') }}</button>
+                <button type="submit" class="btn btn-success"
+                        style="margin-right: 15px;">{{ trans('common.save') }}</button>
                 <a href="{{ route('backend.product.index') }}" class="btn btn-white">{{ trans('common.cancel') }}</a>
             </div>
         </div>
@@ -204,12 +221,12 @@
                 images: {!! $images !!}
             });
 
-            $('#product-form').submit(function(){
+            $('#product-form').submit(function () {
                 var linked_image_ids = [],
-                    product_images = $('#product-images');
-                $('.dz-image-uploaded', product_images).each(function(){
+                        product_images = $('#product-images');
+                $('.dz-image-uploaded', product_images).each(function () {
                     var id = $(this).data('id');
-                    if(id){
+                    if (id) {
                         linked_image_ids.push(id);
                     }
                 });

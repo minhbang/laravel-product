@@ -7,6 +7,7 @@ use Minhbang\Enum\EnumContract;
 use Minhbang\Enum\HasEnum;
 use Minhbang\Image\ImageableModel as Model;
 use Laracasts\Presenter\PresentableTrait;
+use Minhbang\Locale\Translatable;
 use Minhbang\User\Support\UserQuery;
 use Minhbang\Kit\Traits\Model\SearchQuery;
 use Minhbang\Kit\Traits\Model\FeaturedImage;
@@ -19,9 +20,6 @@ use Minhbang\Kit\Traits\Model\TaggableTrait;
  *
  * @package Minhbang\Product\Models
  * @property integer $id
- * @property string $name
- * @property string $slug
- * @property string $description
  * @property integer $price
  * @property integer $price_old
  * @property string $code
@@ -45,10 +43,10 @@ use Minhbang\Kit\Traits\Model\TaggableTrait;
  * @property mixed $tags
  * @property-read \Illuminate\Database\Eloquent\Collection|\Conner\Tagging\Tagged[] $tagged
  * @property-read \Minhbang\User\User $user
- * @property-read \Minhbang\Category\Item $category
- * @property-read string $category_title
+ * @property-read \Minhbang\Category\Category $category
  * @property-read mixed $featured_image_url
  * @property-read mixed $featured_image_sm_url
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Product\Models\ProductTranslation[] $translations
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product queryDefault()
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product special()
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Kit\Extensions\Model except($id = null)
@@ -74,9 +72,18 @@ use Minhbang\Kit\Traits\Model\TaggableTrait;
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product mine()
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product withAuthor()
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product categorized($category = null)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product withCategoryTitle()
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product withCategoryTitle($locale = null)
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product orderPosition($direction = 'asc')
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product withEnumTitles()
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product translatedIn($locale = null)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product listsTranslations($field)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product withTranslation()
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Product\Models\Product whereTranslation($key, $value, $locale = null, $operator = '=')
+ *
+ * Translated Attributes
+ * @property string $name
+ * @property string $slug
+ * @property string $description
  */
 class Product extends Model implements EnumContract
 {
@@ -93,6 +100,7 @@ class Product extends Model implements EnumContract
     use PresentableTrait;
     use FeaturedImage;
     use HasEnum;
+    use Translatable;
 
     protected $presenter = 'Minhbang\Product\Presenters\ProductPresenter';
     protected $table = 'products';
@@ -111,6 +119,7 @@ class Product extends Model implements EnumContract
         'tags',
         'linked_image_ids',
     ];
+    protected $translatable = ['name', 'slug', 'description'];
 
     protected $searchable = ['name', 'description'];
 
@@ -249,7 +258,7 @@ class Product extends Model implements EnumContract
     }
 
     /**
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      * @param int $limit
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]

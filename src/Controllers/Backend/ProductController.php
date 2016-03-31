@@ -11,6 +11,7 @@ use Minhbang\Product\Requests\ProductRequest;
 use Minhbang\Kit\Extensions\BackendController;
 use Request;
 use Session;
+use LocaleManager;
 
 /**
  * Class ProductController
@@ -21,13 +22,13 @@ class ProductController extends BackendController
 {
     use PositionActions;
 
-    /** @var  \Minhbang\Category\Manager */
+    /** @var  \Minhbang\Category\Root */
     protected $categoryManager;
 
     public function __construct()
     {
         parent::__construct();
-        $this->categoryManager = app('category')->manage('product');
+        $this->categoryManager = app('category-manager')->root('product');
     }
 
     /**
@@ -38,7 +39,8 @@ class ProductController extends BackendController
     public function data()
     {
         /** @var \Minhbang\Product\Models\Product $query */
-        $query = Product::queryDefault()->orderPosition()->withCategoryTitle();
+        $query = Product::with('translations')->queryDefault()->orderPosition()
+            ->withCategoryTitle(LocaleManager::getFallback());
         if (Request::has('search_form')) {
             $query->searchWhere('products.category_id')
                 ->searchWhere('products.age_id')
@@ -101,7 +103,7 @@ class ProductController extends BackendController
                     );
                 }
             )
-            ->searchColumns('products.name', 'categories.title')
+            ->searchColumns('products.name')
             ->make();
     }
 
@@ -177,6 +179,7 @@ class ProductController extends BackendController
         return view(
             'product::backend.product.form',
             compact('product', 'url', 'method', 'categories', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images') +
+            LocaleManager::compact() +
             $product->loadEnums('id')
         );
     }
@@ -226,7 +229,7 @@ class ProductController extends BackendController
             ]
         );
 
-        return view('product::backend.product.show', compact('product'));
+        return view('product::backend.product.show', compact('product') + LocaleManager::compact());
     }
 
     /**
@@ -257,6 +260,7 @@ class ProductController extends BackendController
         return view(
             'product::backend.product.form',
             compact('product', 'url', 'method', 'categories', 'manufacturers', 'tags', 'all_product_tags', 'all_image_tags', 'images') +
+            LocaleManager::compact() +
             $product->loadEnums('id')
         );
     }

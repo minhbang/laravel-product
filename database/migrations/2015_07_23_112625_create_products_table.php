@@ -16,17 +16,12 @@ class CreateProductsTable extends Migration
             'products',
             function (Blueprint $table) {
                 $table->increments('id');
-                $table->string('name', 255);
-                $table->string('slug', 255)->unique();
-                $table->longText('description');
                 $table->integer('price');
                 $table->integer('price_old')->nullable();
                 $table->string('code', 100)->unique();
                 $table->string('size', 255)->nullable();
-
                 $table->integer('gender_id')->unsigned();
                 $table->integer('age_id')->unsigned();
-
                 $table->integer('hit')->unsigned()->default(0);
                 $table->integer('user_id')->unsigned();
                 $table->integer('category_id')->unsigned()->nullable();

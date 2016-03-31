@@ -1,15 +1,15 @@
 <?php
 namespace Minhbang\Product\Requests;
 
-use Minhbang\Kit\Extensions\Request;
+use Minhbang\Locale\TranslatableRequest;
 
-
-class ProductRequest extends Request
+class ProductRequest extends TranslatableRequest
 {
-    public $trans_prefix = 'product::common';
-    public $rules = [
+    protected $trans_prefix = 'product::common';
+
+    protected $rules = [
         'name'            => 'required|max:255',
-        'slug'            => 'required|max:255|alpha_dash|unique:products',
+        'slug'            => 'required|max:255|alpha_dash',
         'description'     => 'required',
         'price'           => 'required|integer',
         'price_old'       => 'integer',
@@ -21,15 +21,7 @@ class ProductRequest extends Request
         'manufacturer_id' => 'required|integer|exists:manufacturers,id',
     ];
 
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
+    protected $translatable = ['name', 'slug', 'description'];
 
     /**
      * Get the validation rules that apply to the request.
@@ -41,7 +33,6 @@ class ProductRequest extends Request
         /** @var \Minhbang\Product\Models\Product $product */
         if ($product = $this->route('product')) {
             //update Product
-            $this->rules['slug'] .= ',slug,' . $product->id;
             $this->rules['code'] .= ',code,' . $product->id;
         } else {
             // create Product

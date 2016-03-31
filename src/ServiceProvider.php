@@ -4,6 +4,9 @@ namespace Minhbang\Product;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Minhbang\Enum\Enum;
+use Minhbang\Product\Models\Manufacturer;
+use Minhbang\Product\Models\Product;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -27,10 +30,12 @@ class ServiceProvider extends BaseServiceProvider
         );
         $this->publishes(
             [
-                __DIR__ . '/../database/migrations/2015_07_21_211026_create_manufacturers_table.php' =>
+                __DIR__ . '/../database/migrations/2015_07_21_211026_create_manufacturers_table.php'        =>
                     database_path('migrations/2015_07_21_211026_create_manufacturers_table.php'),
-                __DIR__ . '/../database/migrations/2015_07_23_112625_create_products_table.php'      =>
+                __DIR__ . '/../database/migrations/2015_07_23_112625_create_products_table.php'             =>
                     database_path('migrations/2015_07_23_112625_create_products_table.php'),
+                __DIR__ . '/../database/migrations/2015_07_23_122625_create_product_translations_table.php' =>
+                    database_path('migrations/2015_07_23_122625_create_product_translations_table.php'),
             ],
             'db'
         );
@@ -42,8 +47,10 @@ class ServiceProvider extends BaseServiceProvider
         $router->pattern('product', '[0-9]+');
         $router->pattern('manufacturer', '[0-9]+');
         // model bindings
-        $router->model('product', 'Minhbang\Product\Models\Product');
-        $router->model('manufacturer', 'Minhbang\Product\Models\Manufacturer');
+        $router->model('product', Product::class);
+        $router->model('manufacturer', Manufacturer::class);
+
+        Enum::registerResources([Product::class]);
     }
 
     /**

@@ -137,6 +137,12 @@ class ProductPresenter extends Presenter
         return "<img{$class} src=\"$src\" title=\"{$this->entity->name}\" ath=\"{$this->entity->name}\" width=\"$width\" height=\"$height\" />{$html}";
     }
 
+    public function lightbox_featured_image(){
+        $src = $this->entity->featuredImageUrl(false);
+        $src_sm = $this->entity->featuredImageUrl(true);
+        return "<a href=\"{$src}\" data-lightbox=\"product{$this->entity->id}\"><img src=\"{$src_sm}\"></a>";
+    }
+
     public function lightbox_images()
     {
         $id = $this->entity->id;
