@@ -3,7 +3,7 @@
 namespace Minhbang\Product;
 
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Minhbang\Kit\Extensions\BaseServiceProvider;
 use Minhbang\Enum\Enum;
 use Minhbang\Product\Models\Manufacturer;
 use Minhbang\Product\Models\Product;
@@ -40,9 +40,8 @@ class ServiceProvider extends BaseServiceProvider
             'db'
         );
 
-        if (config('product.add_route') && !$this->app->routesAreCached()) {
-            require __DIR__ . '/routes.php';
-        }
+        $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('product.add_route'));
+        
         // pattern filters
         $router->pattern('product', '[0-9]+');
         $router->pattern('manufacturer', '[0-9]+');
