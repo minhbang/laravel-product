@@ -68,7 +68,7 @@ class ProductPresenter extends Presenter
      */
     public function price($sign = '', $wrapper = null)
     {
-        return price_format($this->entity->price, $sign, $wrapper);
+        return price_format($this->entity->price, $sign, $wrapper, false, config('product.decimals'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ProductPresenter extends Presenter
      */
     public function price_old($sign = '', $wrapper = null)
     {
-        return price_format($this->entity->price_old, $sign, $wrapper);
+        return price_format($this->entity->price_old, $sign, $wrapper, false, config('product.decimals'));
     }
 
     /**
@@ -137,9 +137,11 @@ class ProductPresenter extends Presenter
         return "<img{$class} src=\"$src\" title=\"{$this->entity->name}\" ath=\"{$this->entity->name}\" width=\"$width\" height=\"$height\" />{$html}";
     }
 
-    public function lightbox_featured_image(){
+    public function lightbox_featured_image()
+    {
         $src = $this->entity->featuredImageUrl(false);
         $src_sm = $this->entity->featuredImageUrl(true);
+
         return "<a href=\"{$src}\" data-lightbox=\"product{$this->entity->id}\"><img src=\"{$src_sm}\"></a>";
     }
 
@@ -185,15 +187,15 @@ class ProductPresenter extends Presenter
         $wishlist_added = Wishlist::has($this->entity->id) ? ' added' : '';
         $compare_label = trans('shop::cart.compare');
         $compare_url = route('wishlist.compare', ['product' => $this->entity->id]);
-
+        $currency = config('product.currency_short');
         return <<<"HTML"
 <div class="product-col cart-item" data-id="{$this->entity->id}">
     <div class="image"><a href="{$this->entity->url}">{$this->featured_image()}</a></div>
     <div class="caption">
         <h4><a href="{$this->entity->url}" class="name">{$this->entity->name}</a></h4>
         <div class="price">
-            {$this->price_old('đ', 'price-old')}
-            {$this->price('đ', 'price-new')}
+            {$this->price_old($currency, 'price-old')}
+            {$this->price($currency, 'price-new')}
         </div>
         <div class="cart-button">
             <a href="{$wishlist_url}" data-toggle="tooltip" title="{$wishlist_label}" class="btn btn-wishlist{$wishlist_added}" data-action="wishlist-update">
@@ -225,6 +227,7 @@ HTML;
         } else {
             $remove_link = '';
         }
+        $currency = config('product.currency_short');
 
         return <<<"HTML"
 <tr id="row-{$index}" class="cart-item" data-id="{$product->id}">
@@ -237,8 +240,8 @@ HTML;
     </td>
     <td class="min-width">{$this->manufacturer()}</td>
     <td class="min-width price">
-        {$this->price('đ', 'price-new')}<br>
-        {$this->price_old('đ', 'price-old')}
+        {$this->price($currency, 'price-new')}<br>
+        {$this->price_old($currency, 'price-old')}
     </td>
     <td class="min-width text-center">{$remove_link}</td>
 </tr>

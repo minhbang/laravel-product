@@ -1,5 +1,12 @@
 <?php
 return [
+    /**
+     * Đơn vị tiền tệ
+     */
+    'currency'       => 'USD',
+    'currency_short' => '$',
+    'decimals' => 2,
+
     // Hình đại diện của sản phẩm
     'featured_image' => [
         'dir'       => 'images/products',

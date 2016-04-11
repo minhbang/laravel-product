@@ -37,4 +37,5 @@ return [
     'related'         => 'Sản phẩm liên quan',
     'special_product' => 'Sản phẩm nổi bật',
     'normal_product'  => 'Sản phẩm thường',
+    'price_hint'      => "Nhập giá tiền theo Tiếng Việt, phần THẬP PHÂN sau dấu ','",
 ];

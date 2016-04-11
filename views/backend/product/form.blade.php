@@ -93,8 +93,13 @@
                             <div class="form-group{{ $errors->has("price") ? ' has-error':'' }}">
                                 {!! Form::label("price", trans('product::common.price'), ['class' => "control-label"]) !!}
                                 <div class="input-group">
-                                    {!! Form::text("price", null, ['class' => 'form-control text-right number']) !!}
-                                    <span class="input-group-addon">đồng</span>
+                                    {!! Form::text("price", null, [
+                                        'class' => 'form-control text-right number',
+                                        'data-mdec' => config('product.decimals'),
+                                        'data-adec' => trans('currency.dec_point'),
+                                        'data-asep' => trans('currency.thousands_sep'),
+                                    ]) !!}
+                                    <span class="input-group-addon">{{config('product.currency')}}</span>
                                 </div>
                                 @if($errors->has("price"))
                                     <p class="help-block">{{ $errors->first("price") }}</p>
@@ -103,8 +108,13 @@
                             <div class="form-group{{ $errors->has("price_old") ? ' has-error':'' }}">
                                 {!! Form::label("price_old", trans('product::common.price_old'), ['class' => "control-label"]) !!}
                                 <div class="input-group">
-                                    {!! Form::text("price_old", null, ['class' => 'form-control text-right number']) !!}
-                                    <span class="input-group-addon">đồng</span>
+                                    {!! Form::text("price_old", null, [
+                                        'class' => 'form-control text-right number',
+                                        'data-mdec' => config('product.decimals'),
+                                        'data-adec' => trans('currency.dec_point'),
+                                        'data-asep' => trans('currency.thousands_sep'),
+                                    ]) !!}
+                                    <span class="input-group-addon">{{config('product.currency')}}</span>
                                 </div>
                                 @if($errors->has("price_old"))
                                     <p class="help-block">{{ $errors->first("price_old") }}</p>
@@ -197,6 +207,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning">{{trans('product::common.price_hint')}}</div>
         </div>
     </div>
     <div class="ibox">

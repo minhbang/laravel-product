@@ -16,8 +16,8 @@ class CreateProductsTable extends Migration
             'products',
             function (Blueprint $table) {
                 $table->increments('id');
-                $table->integer('price');
-                $table->integer('price_old')->nullable();
+                $table->float('price');
+                $table->float('price_old')->nullable();
                 $table->string('code', 100)->unique();
                 $table->string('size', 255)->nullable();
                 $table->integer('gender_id')->unsigned();
