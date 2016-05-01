@@ -17,7 +17,7 @@ class ProductRequest extends TranslatableRequest
         'size'            => 'max:255',
         'gender_id'       => 'integer',
         'category_id'     => 'required|integer|exists:categories,id',
-        'age_id'          => 'integer|exists:categories,id',
+        'age_id'          => 'integer',
         'manufacturer_id' => 'required|integer|exists:manufacturers,id',
     ];
 
